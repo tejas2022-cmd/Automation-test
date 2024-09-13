@@ -1,0 +1,46 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import os
+from datetime import datetime
+output_folder = r"C:\Users\Tejaswini\OneDrive\Desktop\python\test_results\1"
+output_folder = r"C:\Users\Tejaswini\OneDrive\Desktop\python\test_results\2"
+output_folder = r"C:\Users\Tejaswini\OneDrive\Desktop\python\test_results\3"
+output_folder = r"C:\Users\Tejaswini\OneDrive\Desktop\python\test_results\4"
+output_folder = r"C:\Users\Tejaswini\OneDrive\Desktop\python\test_results\5"
+
+def take_screenshot(driver, device, resolution, output_folder):
+    driver.set_window_size(*resolution)
+    screenshot_name = f"Screenshot-{datetime.now().strftime('%Y%m%d-%H%M%S')}.png"
+    folder_path = os.path.join(output_folder, device, f"{resolution[0]}x{resolution[1]}")
+    os.makedirs(folder_path, exist_ok=True)
+    driver.save_screenshot(os.path.join(folder_path, screenshot_name))
+
+def test_resolutions(browser, url, resolutions, output_folder):
+    if browser.lower() == "chrome":
+        service = Service("C:/Users/Tejaswini/OneDrive/Desktop/python/chromedriver-win64/chromedriver.exe")
+        driver = webdriver.Chrome(service=service)
+
+    else:
+        raise ValueError("Unsupported browser")
+
+    try:
+        driver.get(url)
+        for device, device_resolutions in resolutions.items():
+            for resolution in device_resolutions:
+                take_screenshot(driver, device, resolution, output_folder)
+    finally:
+        driver.quit()
+url = "https://www.getcalley.com/"
+url="https://www.getcalley.com/calley-lifetime-offer/"
+url="https://www.getcalley.com/see-a-demo/"
+url="https://www.getcalley.com/calley-teams-features/"
+url="https://www.getcalley.com/calley-pro-features/"
+resolutions = {
+    "Desktop": [(1920, 1080), (1366, 768), (1536, 864)],
+    "Mobile": [(360, 640), (414, 896), (375, 667)]
+}
+browsers = ["Chrome"]
+for browser in browsers:
+    test_resolutions(browser, url, resolutions, output_folder)
+
+print("Testing complete. Check the 'test_results' folder for screenshots.")
